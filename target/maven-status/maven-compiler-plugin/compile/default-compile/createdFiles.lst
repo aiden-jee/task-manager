@@ -1,2 +1,4 @@
 me/aidenjee/taskmanager/Task.class
+me/aidenjee/taskmanager/TaskCounter.class
+me/aidenjee/taskmanager/TaskProcessor.class
 me/aidenjee/taskmanager/TaskManager.class

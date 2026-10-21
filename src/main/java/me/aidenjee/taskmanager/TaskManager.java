@@ -11,16 +11,18 @@ import java.util.stream.Collectors;
 public class TaskManager {
     private final HashMap<UUID, Task> tasks = new HashMap<>();
 
-    public void createTask(String title, LocalDate dueDate) {
+    public UUID createTask(String title, LocalDate dueDate) {
         Task task = new Task(title, dueDate);
-        tasks.put(task.getUUID(), task);
+        UUID uuid = task.getUUID();
+        tasks.put(uuid, task);
+        return uuid;
     }
 
     public void deleteTask(UUID id) {
         tasks.remove(id);
     }
 
-    public int getTasksQuantity() {
+    public int getTaskCount() {
         return tasks.size();
     }
 
