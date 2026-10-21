@@ -6,7 +6,7 @@ import java.util.concurrent.Executors;
 public class TaskCounter {
     private int completedCount = 0;
 
-    public void increment() {
+    public synchronized void increment() {
         completedCount++;
     }
 

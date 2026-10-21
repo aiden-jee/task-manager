@@ -7,6 +7,7 @@ import java.util.concurrent.locks.LockSupport;
 public class TaskProcessor {
     private final ExecutorService taskProcessor = Executors.newFixedThreadPool(3);
     private final TaskCounter counter = new TaskCounter();
+    private static final int COUNTER_TASKS = 100_000;
 
     public void submitTask(Task task) {
         taskProcessor.submit(() -> {
@@ -28,8 +29,8 @@ public class TaskProcessor {
         }
     }
 
-    public void submit3000CounterTasks() {
-        for (int i = 0; i < 3000; i++) {
+    public void submitCounterTasks() {
+        for (int i = 0; i < COUNTER_TASKS; i++) {
             taskProcessor.execute(() -> counter.increment());
         }
     }
@@ -37,7 +38,7 @@ public class TaskProcessor {
     public static void main(String[] args) {
         System.out.println("MAIN STARTED");
         TaskProcessor processor = new TaskProcessor();
-        processor.submit3000CounterTasks();
+        processor.submitCounterTasks();
         processor.closeProcessor();
         System.out.println(processor.counter.getCount());
     }
