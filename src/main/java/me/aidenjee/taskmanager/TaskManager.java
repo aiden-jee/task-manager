@@ -2,20 +2,24 @@ package me.aidenjee.taskmanager;
 
 import java.time.LocalDate;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class TaskManager {
-    private final HashMap<UUID, Task> tasks = new HashMap<>();
+    private final Map<UUID, Task> tasks = new ConcurrentHashMap<>();
 
     public UUID createTask(String title, LocalDate dueDate) {
         Task task = new Task(title, dueDate);
         UUID uuid = task.getUUID();
         tasks.put(uuid, task);
         return uuid;
+    }
+
+    public boolean addTaskIfAbsent(Task task) {
+        return tasks.putIfAbsent(task.getUUID(), task) == null;
     }
 
     public void deleteTask(UUID id) {

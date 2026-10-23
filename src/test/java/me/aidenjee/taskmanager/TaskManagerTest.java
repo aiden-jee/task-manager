@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,6 +19,7 @@ public class TaskManagerTest {
     private HashMap<String, UUID> taskIds;
     private List<TaskData> tasks;
     record TaskData(String title, LocalDate dueDate) {}
+
 
     @BeforeEach 
     public void setUp() {
@@ -68,5 +72,23 @@ public class TaskManagerTest {
 
         assertEquals(taskManager.getTaskCount() - 1, incompleteTasks.size());
         assertEquals(expectedTitles, actualTitles);
+    }
+
+    @Test 
+    public void concurrentInsertions() throws InterruptedException {
+        Task task = new Task("concurrency test");
+        TaskManager testTaskManager = new TaskManager();
+        ExecutorService executor = Executors.newFixedThreadPool(10);
+        for (int i = 0; i < 10; i++) {
+            executor.execute(() -> testTaskManager.addTaskIfAbsent(task));
+        }
+
+        executor.shutdown();
+        try {
+            executor.awaitTermination(20, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+                throw e;
+        }
+        assertEquals(1, testTaskManager.getTaskCount());
     }
 }

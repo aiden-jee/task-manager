@@ -9,10 +9,15 @@ public class Task {
     private LocalDate dueDate;
     private boolean completed; 
 
-    Task(String title, LocalDate dueDate) {
+    Task(String title) {
         this.title = title;
-        this.dueDate = dueDate;
+        this.dueDate = LocalDate.MAX;
         completed = false;
+    }
+
+    Task(String title, LocalDate dueDate) {
+        this(title);
+        this.dueDate = dueDate;
     }
 
     public UUID getUUID() {

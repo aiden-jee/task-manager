@@ -1,17 +1,17 @@
 package me.aidenjee.taskmanager;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+
 
 public class TaskCounter {
-    private int completedCount = 0;
+    private final AtomicInteger completedCount = new AtomicInteger(0);
 
-    public synchronized void increment() {
-        completedCount++;
+    public void increment() {
+        completedCount.getAndIncrement();
     }
 
     public int getCount() {
-        return completedCount;
+        return completedCount.get();
     }
 }
   
