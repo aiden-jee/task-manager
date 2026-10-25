@@ -5,9 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -79,16 +81,30 @@ public class TaskManagerTest {
         Task task = new Task("concurrency test");
         TaskManager testTaskManager = new TaskManager();
         ExecutorService executor = Executors.newFixedThreadPool(10);
-        for (int i = 0; i < 10; i++) {
-            executor.execute(() -> testTaskManager.addTaskIfAbsent(task));
-        }
+        AtomicInteger successfulInserts = new AtomicInteger(0);
+        CountDownLatch startGate = new CountDownLatch(1);
 
+        for (int i = 0; i < 10; i++) {
+            executor.execute(() -> {
+                try {
+                    startGate.await();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+                if (testTaskManager.addTaskIfAbsent(task)) {
+                    successfulInserts.incrementAndGet();
+                }
+            });
+        }
+        startGate.countDown();
         executor.shutdown();
         try {
             executor.awaitTermination(20, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
                 throw e;
         }
+        assertEquals(1, successfulInserts.get());
         assertEquals(1, testTaskManager.getTaskCount());
     }
 }
