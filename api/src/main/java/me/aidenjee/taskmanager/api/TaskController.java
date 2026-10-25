@@ -1,10 +1,13 @@
 package me.aidenjee.taskmanager.api;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,9 +27,10 @@ public class TaskController {
 
     // requests
     public record CreateTaskRequest(String title, LocalDate dueDate) {}
+    public record PatchTaskRequest(String title, LocalDate dueDate, Boolean completed) {}
 
     // responses
-    public record GetTaskResponse(String title, LocalDate dueDate, boolean completed) {}
+    public record TaskResponse(String title, LocalDate dueDate, boolean completed) {}
 
     @PostMapping("/tasks")
     @ResponseStatus(HttpStatus.CREATED)
@@ -37,12 +41,12 @@ public class TaskController {
     }
 
     @GetMapping("/tasks/{id}")
-    public GetTaskResponse getTask(@PathVariable("id") UUID uuid) {
+    public TaskResponse getTask(@PathVariable("id") UUID uuid) {
         Task task = taskManager.getTaskByID(uuid);
         if (task == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found!");
         }
-        GetTaskResponse res = new GetTaskResponse(
+        TaskResponse res = new TaskResponse(
             task.getTitle(), 
             task.getDueDate(), 
             task.getCompletedStatus()
@@ -50,7 +54,22 @@ public class TaskController {
         return res;
     }
     
-    
+    @GetMapping("/tasks")
+    public List<TaskResponse> getTasks() {
+        return taskManager.getTasks().stream()
+            .map(task -> new TaskResponse(task.getTitle(), task.getDueDate(), task.getCompletedStatus()))
+            .toList();
+    }
+
+    @PatchMapping("/tasks/{id}")
+    public TaskResponse patchTask(@PathVariable UUID id, @RequestBody PatchTaskRequest req) {
+        try {
+            Task task = taskManager.patchTask(id, req.title(), req.dueDate(), req.completed());
+            return new TaskResponse(task.getTitle(), task.getDueDate(), task.getCompletedStatus());
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        }
+    }
 
     @GetMapping("/tasks/count")
     public int getTaskCount() {

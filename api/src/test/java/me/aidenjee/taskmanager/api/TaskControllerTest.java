@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import me.aidenjee.taskmanager.api.TaskController.GetTaskResponse;
+import me.aidenjee.taskmanager.api.TaskController.TaskResponse;
 
 class TaskControllerTest {
 
@@ -24,7 +24,7 @@ class TaskControllerTest {
 
         when(mockManager.getTaskByID(id)).thenReturn(task);
 
-        GetTaskResponse response = controller.getTask(id);
+        TaskResponse response = controller.getTask(id);
 
         assertEquals("Study Spring Boot", response.title());
         assertEquals(task.getDueDate(), response.dueDate());

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -44,6 +45,10 @@ public class TaskManager {
             .toList();
     }
 
+    public List<Task> getTasks() {
+        return tasks.values().stream().toList();
+    }
+
     public List<Task> getTasksSortedByTitle() {
         return tasks.values().stream()
             .sorted(Comparator.comparing(Task::getTitle))
@@ -59,5 +64,22 @@ public class TaskManager {
     public Map<Boolean, List<Task>> groupTasksByCompletion() {
         return tasks.values().stream()
             .collect(Collectors.partitioningBy(task -> task.getCompletedStatus()));
+    }
+
+    public Task patchTask(UUID id, String title, LocalDate dueDate, Boolean completed) {
+        Task task = tasks.get(id);
+        if (task == null) {
+            throw new NoSuchElementException("Task not found");
+        }
+        if (title != null) {
+            task.editTitle(title);
+        }
+        if (dueDate != null) {
+            task.editDueDate(dueDate);
+        }
+        if (completed != null) {
+            task.editCompletedStatus(completed);
+        } 
+        return task;       
     }
 }
