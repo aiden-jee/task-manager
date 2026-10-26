@@ -16,7 +16,13 @@ public class TaskManager {
     private final Map<UUID, Task> tasks = new ConcurrentHashMap<>();
 
     public UUID createTask(String title, LocalDate dueDate) {
-        Task task = new Task(title, dueDate);
+        Task task;
+        if (dueDate == null) {
+            task = new Task(title);
+        }
+        else {
+            task = new Task(title, dueDate);
+        }
         UUID uuid = task.getUUID();
         tasks.put(uuid, task);
         return uuid;
@@ -27,7 +33,10 @@ public class TaskManager {
     }
 
     public void deleteTask(UUID id) {
-        tasks.remove(id);
+        Task task = tasks.remove(id);
+        if (task == null) {
+            throw new NoSuchElementException("Task not found!");
+        }
     }
 
     public int getTaskCount() {
