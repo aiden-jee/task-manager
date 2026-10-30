@@ -7,6 +7,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 
 @Entity 
 @Table(name="tasks")
@@ -24,6 +25,10 @@ public class Task {
 
     @Column(name="COMPLETED_STATUS")
     private boolean completed; 
+
+    @Version
+    @Column
+    private Long version;
 
     protected Task() {}
 
@@ -53,6 +58,10 @@ public class Task {
 
     public boolean getCompletedStatus() {
         return completed;
+    }
+
+    public Long getVersion() {
+        return version;
     }
 
     public boolean getOverdue() {
