@@ -81,7 +81,7 @@ public class TaskController {
     }
 
     @GetMapping("/tasks/count")
-    public int getTaskCount() {
+    public long getTaskCount() {
         return taskManager.getTaskCount();
     }
 

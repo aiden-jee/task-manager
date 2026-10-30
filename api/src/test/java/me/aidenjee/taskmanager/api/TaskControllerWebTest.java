@@ -57,7 +57,7 @@ public class TaskControllerWebTest {
             .standaloneSetup(controller)
             .build();
 
-        when(mockManager.getTaskCount()).thenReturn(5);
+        when(mockManager.getTaskCount()).thenReturn(5L);
 
         mockMvc.perform(get("/tasks/count"))
             .andExpect(status().isOk())

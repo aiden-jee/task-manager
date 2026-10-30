@@ -3,16 +3,35 @@ package me.aidenjee.taskmanager.api;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity 
+@Table(name="tasks")
 public class Task {
-    private final UUID id = UUID.randomUUID();
+    
+    @Id 
+    @Column(nullable=false)
+    private UUID id;
+
+    @Column(nullable=false)
     private String title;
+
+    @Column(name="DUE_DATE")
     private LocalDate dueDate;
+
+    @Column(name="COMPLETED_STATUS")
     private boolean completed; 
+
+    protected Task() {}
 
     Task(String title) {
         this.title = title;
-        this.dueDate = LocalDate.MAX;
+        this.dueDate = null;
         completed = false;
+        this.id = UUID.randomUUID();
     }
 
     Task(String title, LocalDate dueDate) {
